@@ -7,6 +7,7 @@
 
 import AVFoundation
 import Foundation
+import UIKit
 
 
 struct VideoSpec {
@@ -34,6 +35,8 @@ class VideoCapture: NSObject {
     private var videoDevice: AVCaptureDevice!
     private var videoConnection: AVCaptureConnection!
     private var previewLayer: AVCaptureVideoPreviewLayer?
+    private let fileOutput = AVCaptureMovieFileOutput()
+    //private var outputFileURL: URL
     
     private let dataOutputQueue = DispatchQueue(label: "com.shu223.dataOutputQueue")
 
@@ -179,6 +182,26 @@ class VideoCapture: NSObject {
 
     func setDepthFilterEnabled(_ enabled: Bool) {
         depthDataOutput.isFilteringEnabled = enabled
+    }
+    
+    func startVideoRecording(){
+        captureSession.startRunning()
+        captureSession.addOutput(fileOutput)
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as! NSString
+        let outputPath = "\(documentsPath)/output.mp4"
+        let outputFileUrl = URL(fileURLWithPath: outputPath)
+        fileOutput.startRecording(to: outputFileUrl, recordingDelegate: self as! AVCaptureFileOutputRecordingDelegate)
+    }
+    func stopVideoRecording(){
+        fileOutput.stopRecording()
+    }
+    
+    func captureOutput(captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAtURL outputFileURL: NSURL!, fromConnections connections: [AnyObject]!, error: NSError!) {
+        //print("capture output : finish recording to \(outputFileURL)”)
+        UISaveVideoAtPathToSavedPhotosAlbum(outputFileURL.path, nil, nil, nil)
+    }
+    func captureOutput(captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAtURL fileURL: NSURL!, fromConnections connections: [AnyObject]!) {
+        print("capture output: started recording to \(fileURL)")
     }
 }
 

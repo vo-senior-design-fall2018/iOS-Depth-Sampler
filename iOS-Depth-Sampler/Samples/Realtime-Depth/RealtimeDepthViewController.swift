@@ -98,6 +98,18 @@ class RealtimeDepthViewController: UIViewController {
     @IBAction func filterSwitched(_ sender: UISwitch) {
         videoCapture.setDepthFilterEnabled(sender.isOn)
     }
+    
+    @IBAction func startRecording (sender: UIButton) {
+        sender.backgroundColor = .red
+        videoCapture.startVideoRecording()
+        
+    }
+    
+    @IBAction func stopRecording (sender: UIButton) {
+        sender.backgroundColor = .white
+        videoCapture.stopVideoRecording()
+    }
+    
 }
 
 extension RealtimeDepthViewController: MTKViewDelegate {
