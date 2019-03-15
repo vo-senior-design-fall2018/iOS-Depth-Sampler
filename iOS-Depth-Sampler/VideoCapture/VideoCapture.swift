@@ -198,7 +198,7 @@ class VideoCapture: NSObject {
     
     func captureOutput(captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAtURL outputFileURL: NSURL!, fromConnections connections: [AnyObject]!, error: NSError!) {
         //print("capture output : finish recording to \(outputFileURL)”)
-        UISaveVideoAtPathToSavedPhotosAlbum(outputFileURL.path, nil, nil, nil)
+        UISaveVideoAtPathToSavedPhotosAlbum(outputFileURL.relativePath!, nil, nil, nil)
     }
     func captureOutput(captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAtURL fileURL: NSURL!, fromConnections connections: [AnyObject]!) {
         print("capture output: started recording to \(fileURL)")
