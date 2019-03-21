@@ -8,6 +8,7 @@
 import UIKit
 import MetalKit
 import AVFoundation
+import ReplayKit
 
 class RealtimeDepthViewController: UIViewController {
 
@@ -16,10 +17,14 @@ class RealtimeDepthViewController: UIViewController {
     @IBOutlet weak var filterSwitch: UISwitch!
     @IBOutlet weak var disparitySwitch: UISwitch!
     @IBOutlet weak var equalizeSwitch: UISwitch!
+    @IBOutlet weak var recordButton: UIButton!
 
     private var videoCapture: VideoCapture!
     var currentCameraType: CameraType = .back(true)
     private let serialQueue = DispatchQueue(label: "com.shu223.iOS-Depth-Sampler.queue")
+    
+    //let recorder = RPScreenRecorder.shared()
+    private var isRecording = false
 
     private var renderer: MetalRenderer!
     private var depthImage: CIImage?
@@ -99,15 +104,33 @@ class RealtimeDepthViewController: UIViewController {
         videoCapture.setDepthFilterEnabled(sender.isOn)
     }
     
-    @IBAction func startRecording (sender: UIButton) {
-        sender.backgroundColor = .red
-        videoCapture.startVideoRecording()
-        
-    }
     
-    @IBAction func stopRecording (sender: UIButton) {
-        sender.backgroundColor = .white
-        videoCapture.stopVideoRecording()
+    //@IBAction func startRecording(sender: UIButton) {
+      //  sender.backgroundColor = .red
+       // videoCapture.startVideoRecording()
+        
+  //  }
+    
+    
+    //@IBAction func stopRecording(sender: UIButton) {
+      //  sender.backgroundColor = .white
+       // videoCapture.stopVideoRecording()
+       // print("hello")
+    //}
+    
+    
+    @IBAction func recordButtonTapped() {
+        if !isRecording {
+            self.recordButton.backgroundColor = UIColor.red
+            //sender.backgroundColor = .red
+            videoCapture.startVideoRecording()
+            print("recording")
+        } else {
+            self.recordButton.backgroundColor = UIColor.white
+            //sender.backgroundColor = .white
+            videoCapture.stopVideoRecording()
+            print("recording ended")
+        }
     }
     
 }
