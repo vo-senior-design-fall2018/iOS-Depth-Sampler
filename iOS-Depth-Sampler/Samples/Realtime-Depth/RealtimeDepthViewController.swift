@@ -10,6 +10,7 @@ import MetalKit
 import AVFoundation
 import ReplayKit
 
+
 class RealtimeDepthViewController: UIViewController {
 
     @IBOutlet weak var previewView: UIView!
@@ -26,6 +27,7 @@ class RealtimeDepthViewController: UIViewController {
     
     //let recorder = RPScreenRecorder.shared()
     private var isRecording = false
+    private var captured = false
 
     private var renderer: MetalRenderer!
     private var depthImage: CIImage?
@@ -47,6 +49,8 @@ class RealtimeDepthViewController: UIViewController {
                                     preferredSpec: nil,
                                     previewContainer: previewView.layer)
         
+        //metalVideoRecorder = MetalVideoRecorder(outputURL: <#T##URL#>, size: currentDrawableSize, previewContainer: mtkView.layer)
+        
         videoCapture.syncedDataBufferHandler = { [weak self] videoPixelBuffer, depthData, face in
             guard let self = self else { return }
             
@@ -55,8 +59,11 @@ class RealtimeDepthViewController: UIViewController {
             var useDisparity: Bool = false
             var applyHistoEq: Bool = false
             DispatchQueue.main.sync(execute: {
-                useDisparity = self.disparitySwitch.isOn
-                applyHistoEq = self.equalizeSwitch.isOn
+                //useDisparity = self.disparitySwitch.isOn
+                //applyHistoEq = self.equalizeSwitch.isOn
+                
+                useDisparity = false
+                applyHistoEq = true
             })
             
             self.serialQueue.async {
@@ -64,9 +71,19 @@ class RealtimeDepthViewController: UIViewController {
                 
                 guard let ciImage = depthData.depthDataMap.transformedImage(targetSize: self.currentDrawableSize, rotationAngle: 0) else { return }
                 self.depthImage = applyHistoEq ? ciImage.applyingFilter("YUCIHistogramEqualization") : ciImage
+                
+                if (!self.captured) {
+                    //let image = CIImage(image: self.depthImage!)
+                    let context = CIContext()
+                    let image = context.createCGImage(self.depthImage!, from: self.depthImage!.extent)
+                    let output = UIImage(cgImage: image!)
+                    self.captured = true
+                    UIImageWriteToSavedPhotosAlbum(output, nil, nil, nil);
+                }
+                
             }
         }
-        videoCapture.setDepthFilterEnabled(filterSwitch.isOn)
+        videoCapture.setDepthFilterEnabled(true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -112,9 +129,10 @@ class RealtimeDepthViewController: UIViewController {
             //self.recordButton.backgroundColor = UIColor.red
             sender.backgroundColor = .red
             //videoCapture.startVideoRecording()
-            metalVideoRecorder.startRecording()
-            isRecording = true
             debugPrint("recording")
+            //metalVideoRecorder.startRecording()
+            isRecording = true
+            //debugPrint("recording")
             //var currentDrawable: CAMetalDrawable?
             
             //let texture = currentDrawable?.texture
@@ -126,8 +144,8 @@ class RealtimeDepthViewController: UIViewController {
         } else {
             //self.recordButton.backgroundColor = UIColor.white
             sender.backgroundColor = .white
-            videoCapture.stopVideoRecording()
-            metalVideoRecorder.endRecording(<#T##completionHandler: () -> ()##() -> ()#>)
+            //videoCapture.stopVideoRecording()
+            //metalVideoRecorder.endRecording(<#T##completionHandler: () -> ()##() -> ()#>)
             debugPrint("recording ended")
             
         }

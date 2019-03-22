@@ -11,6 +11,12 @@ import AVKit
 
 class MetalVideoRecorder {
     
+    private let captureSession = AVCaptureSession()
+    private var videoDevice: AVCaptureDevice!
+    private var videoConnection: AVCaptureConnection!
+    private var previewLayer: AVCaptureVideoPreviewLayer?
+    
+    
     var isRecording = false
     var recordingStartTime = TimeInterval(0)
     
@@ -18,8 +24,27 @@ class MetalVideoRecorder {
     private var assetWriterVideoInput: AVAssetWriterInput
     private var assetWriterPixelBufferInput: AVAssetWriterInputPixelBufferAdaptor
     
-    init?(outputURL url: URL, size: CGSize) {
+    init?(outputURL url: URL, size: CGSize, previewContainer: CALayer?) {
+        
+        
+        captureSession.beginConfiguration()
+        
+        // inputPriorityだと深度とれない
+        captureSession.sessionPreset = AVCaptureSession.Preset.photo
+        
+        
+        // setup preview
+        if let previewContainer = previewContainer {
+            let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+            previewLayer.frame = previewContainer.bounds
+            previewLayer.contentsGravity = CALayerContentsGravity.resizeAspectFill
+            previewLayer.videoGravity = .resizeAspectFill
+            previewContainer.insertSublayer(previewLayer, at: 0)
+            self.previewLayer = previewLayer
+        }
+        
         do {
+            debugPrint(url)
             assetWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.m4v)
         } catch {
             return nil
