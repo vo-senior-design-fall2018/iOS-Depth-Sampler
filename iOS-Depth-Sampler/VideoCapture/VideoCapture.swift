@@ -186,21 +186,12 @@ class VideoCapture: NSObject {
         depthDataOutput.isFilteringEnabled = enabled
     }
     
+    
     func startVideoRecording(){
         
         print("start video Recording function in VideoCapture")
         captureSession.addOutput(fileOutput)
         captureSession.startRunning()
-        //let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as! NSString
-        //let outputPath = "\(documentsPath)/output.mp4"
-        //let outputFileUrl = URL(fileURLWithPath: outputPath)
-        //fileOutput.startRecording(to: outputFileUrl, recordingDelegate: self)
-        
-        
-        
-        //captureSession.addOutput(fileOutput)
-        
-        //captureSession.startRunning()
         
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let fileUrl = paths[0].appendingPathComponent("output.mov")

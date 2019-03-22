@@ -62,9 +62,6 @@ class RealtimeDepthViewController: UIViewController {
             DispatchQueue.main.sync(execute: {
                 useDisparity = self.disparitySwitch.isOn
                 applyHistoEq = self.equalizeSwitch.isOn
-                
-                //useDisparity = false
-                //applyHistoEq = true
             })
             
             self.serialQueue.async {
@@ -72,14 +69,30 @@ class RealtimeDepthViewController: UIViewController {
                 
                 guard let ciImage = depthData.depthDataMap.transformedImage(targetSize: self.currentDrawableSize, rotationAngle: 0) else { return }
                 self.depthImage = applyHistoEq ? ciImage.applyingFilter("YUCIHistogramEqualization") : ciImage
-                if(self.isRecording){
+                
+                if(self.isRecording){ //start the loop
                     let context = CIContext()
-                    let imaged = context.createCGImage(self.depthImage!, from: self.depthImage!.extent)
+                    let imaged = context.createCGImage(self.depthImage!, from: self.depthImage!.extent) //depth CGI image
+                    let imagen = context.createCGImage(self.videoImage!, from: self.videoImage!.extent) //rgb CGI image
+                    let outputd = UIImage(cgImage: imaged!) //convert depth CGI to UIImage
+                    let outputn = UIImage(cgImage: imagen!) //convert rgb CGI to UIImage
                     
-                    let imagen = context.createCGImage(self.videoImage!, from: self.videoImage!.extent)
-                    let outputd = UIImage(cgImage: imaged!)
-                    let outputn = UIImage(cgImage: imagen!)
+                    let time = NSDate()
+                    let timestamp = time.timeIntervalSince1970
+                    let str = NSString(format: "%.6f", timestamp)
+                    let filename = str.appending(".png")
                     
+                    
+                    
+                    let row = str.appending(" rgb/") + filename + " " + str.appending(" depth/") + filename + "\n"
+                    
+                    let path =  NSHomeDirectory().appending("/Documents/")
+                    let directoryPathText =  NSHomeDirectory().appending("/Documents/associations.txt")
+                    let writePath = NSURL(fileURLWithPath: path)
+                    try? FileManager.default.createDirectory(atPath: writePath.path!, withIntermediateDirectories: true)
+                    let file = writePath.appendingPathComponent("associations.txt")
+                    
+                    //create a folder for depth images
                     let directoryPathDepth =  NSHomeDirectory().appending("/Documents/depth/")
                     if !FileManager.default.fileExists(atPath: directoryPathDepth) {
                         do {
@@ -89,6 +102,7 @@ class RealtimeDepthViewController: UIViewController {
                         }
                     }
                     
+                    //create a folder for rgb images
                     let directoryPathRGB =  NSHomeDirectory().appending("/Documents/rgb/")
                     if !FileManager.default.fileExists(atPath: directoryPathRGB) {
                         do {
@@ -98,29 +112,7 @@ class RealtimeDepthViewController: UIViewController {
                         }
                     }
                     
-                    let time = NSDate()
-                    let timestamp = time.timeIntervalSince1970
-                    let str = NSString(format: "%.6f", timestamp)
-//                    let formatter = DateFormatter()
-//                    formatter.dateFormat = "MMM d yyyy, h:mm:ss:SSSSS"
-//                    let formatteddate = formatter.string(from: time as Date)
-                    
-                    let filename = str.appending(".jpg")
-                    //let filenamen = formatteddate.appending("_n.jpg")
-                    let filepathd = directoryPathDepth.appending(filename)
-                    let filepathn = directoryPathRGB.appending(filename)
-                    
-                    
-                    let row = str.appending(" rgb/") + filename + " " + str.appending(" depth/") + filename + "\n"
-                    
-                    
-                    
-                    let path =  NSHomeDirectory().appending("/Documents/")
-                    let directoryPathText =  NSHomeDirectory().appending("/Documents/associations.txt")
-                    let writePath = NSURL(fileURLWithPath: path)
-                    try? FileManager.default.createDirectory(atPath: writePath.path!, withIntermediateDirectories: true)
-                    let file = writePath.appendingPathComponent("associations.txt")
-                    
+                    //create path for associations.txt
                     if !FileManager.default.fileExists(atPath: directoryPathText) {
                         do {
                             try "".write(to: file!, atomically: false, encoding: String.Encoding.utf8)
@@ -129,17 +121,19 @@ class RealtimeDepthViewController: UIViewController {
                         }
                     }
                     
+                    //if the path exists, write to it
                     if FileManager.default.fileExists(atPath: path) {
                         do {
                             let fileHandle = try FileHandle(forWritingTo: file!)
                             fileHandle.seekToEndOfFile()
                             fileHandle.write(row.data(using: .utf8)!)
-                            //try? row.write(to: file!, atomically: false, encoding: String.Encoding.utf8)
                         } catch {
                             print("Error writing to file \(error)")
                         }
                     }
                     
+                    let filepathd = directoryPathDepth.appending(filename)
+                    let filepathn = directoryPathRGB.appending(filename)
                     let urld = NSURL.fileURL(withPath: filepathd)
                     let urln = NSURL.fileURL(withPath: filepathn)
                     do {
