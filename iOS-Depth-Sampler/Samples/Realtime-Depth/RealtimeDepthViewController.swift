@@ -20,6 +20,7 @@ class RealtimeDepthViewController: UIViewController {
     @IBOutlet weak var recordButton: UIButton!
 
     private var videoCapture: VideoCapture!
+    private var metalVideoRecorder: MetalVideoRecorder!
     var currentCameraType: CameraType = .back(true)
     private let serialQueue = DispatchQueue(label: "com.shu223.iOS-Depth-Sampler.queue")
     
@@ -105,31 +106,30 @@ class RealtimeDepthViewController: UIViewController {
     }
     
     
-    //@IBAction func startRecording(sender: UIButton) {
-      //  sender.backgroundColor = .red
-       // videoCapture.startVideoRecording()
-        
-  //  }
     
-    
-    //@IBAction func stopRecording(sender: UIButton) {
-      //  sender.backgroundColor = .white
-       // videoCapture.stopVideoRecording()
-       // print("hello")
-    //}
-    
-    
-    @IBAction func recordButtonTapped() {
+    @IBAction func recordButtonTapped(_ sender: UIButton) {
         if !isRecording {
-            self.recordButton.backgroundColor = UIColor.red
-            //sender.backgroundColor = .red
-            videoCapture.startVideoRecording()
-            print("recording")
+            //self.recordButton.backgroundColor = UIColor.red
+            sender.backgroundColor = .red
+            //videoCapture.startVideoRecording()
+            metalVideoRecorder.startRecording()
+            isRecording = true
+            debugPrint("recording")
+            //var currentDrawable: CAMetalDrawable?
+            
+            //let texture = currentDrawable?.texture
+            //let commandBuffer = MTLCommandQueue.makeCommandBuffer(<#T##MTLCommandQueue#>)
+            //commandBuffer().addCompletedHandler { commandBuffer in
+            //    self.recorder.writeFrame(forTexture: texture)
+            //}
+            
         } else {
-            self.recordButton.backgroundColor = UIColor.white
-            //sender.backgroundColor = .white
+            //self.recordButton.backgroundColor = UIColor.white
+            sender.backgroundColor = .white
             videoCapture.stopVideoRecording()
-            print("recording ended")
+            metalVideoRecorder.endRecording(<#T##completionHandler: () -> ()##() -> ()#>)
+            debugPrint("recording ended")
+            
         }
     }
     

@@ -185,15 +185,32 @@ class VideoCapture: NSObject {
     }
     
     func startVideoRecording(){
-        captureSession.startRunning()
+        
+        print("start video Recording function in VideoCapture")
         captureSession.addOutput(fileOutput)
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as! NSString
-        let outputPath = "\(documentsPath)/output.mp4"
-        let outputFileUrl = URL(fileURLWithPath: outputPath)
-        fileOutput.startRecording(to: outputFileUrl, recordingDelegate: self as! AVCaptureFileOutputRecordingDelegate)
+        captureSession.startRunning()
+        //let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as! NSString
+        //let outputPath = "\(documentsPath)/output.mp4"
+        //let outputFileUrl = URL(fileURLWithPath: outputPath)
+        //fileOutput.startRecording(to: outputFileUrl, recordingDelegate: self)
+        
+        
+        
+        //captureSession.addOutput(fileOutput)
+        
+        //captureSession.startRunning()
+        
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let fileUrl = paths[0].appendingPathComponent("output.mov")
+        print(fileUrl)
+        try? FileManager.default.removeItem(at: fileUrl)
+        fileOutput.startRecording(to: fileUrl, recordingDelegate: self)
+
+        
     }
     func stopVideoRecording(){
-        fileOutput.stopRecording()
+        print("stop video Recording function in VideoCapture")
+        self.fileOutput.stopRecording()
     }
     
     func captureOutput(captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAtURL outputFileURL: NSURL!, fromConnections connections: [AnyObject]!, error: NSError!) {
@@ -232,6 +249,15 @@ extension VideoCapture: AVCaptureDepthDataOutputDelegate {
     // synchronizer使ってる場合は呼ばれない
     func depthDataOutput(_ output: AVCaptureDepthDataOutput, didOutput depthData: AVDepthData, timestamp: CMTime, connection: AVCaptureConnection) {
         print("\(self.classForCoder)/\(#function)")
+    }
+}
+
+extension VideoCapture: AVCaptureFileOutputRecordingDelegate {
+    func fileOutput(_ output: AVCaptureFileOutput,
+                    didFinishRecordingTo outputFileURL: URL,
+                    from connections: [AVCaptureConnection],
+                    error: Error?) {
+        // Handle output
     }
 }
 

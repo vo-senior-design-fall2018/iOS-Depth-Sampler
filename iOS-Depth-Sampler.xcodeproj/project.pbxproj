@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1596C64D22449F0E00D4A10B /* MetalVideoRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596C64C22449F0E00D4A10B /* MetalVideoRecorder.swift */; };
 		1B4D7FEC5A6D1DAFCE88D110 /* Pods_iOS_Depth_Sampler.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDB82C9008285D580EA95E40 /* Pods_iOS_Depth_Sampler.framework */; };
 		8A171F0B2148FE4100121E80 /* RealtimeDepthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A171F062148FE4100121E80 /* RealtimeDepthViewController.swift */; };
 		8A171F0C2148FE4100121E80 /* RealtimeDepth.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8A171F072148FE4100121E80 /* RealtimeDepth.storyboard */; };
@@ -46,6 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1596C64C22449F0E00D4A10B /* MetalVideoRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalVideoRecorder.swift; sourceTree = "<group>"; };
 		8A171F062148FE4100121E80 /* RealtimeDepthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealtimeDepthViewController.swift; sourceTree = "<group>"; };
 		8A171F082148FE4100121E80 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/RealtimeDepth.storyboard; sourceTree = "<group>"; };
 		8A171F12214905D400121E80 /* CVPixelBuffer+CIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+CIImage.swift"; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 			children = (
 				8AB7602A213631AD0051C3D1 /* PassThrough.metal */,
 				8AB76028213628440051C3D1 /* MetalRenderer.swift */,
+				1596C64C22449F0E00D4A10B /* MetalVideoRecorder.swift */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -408,6 +411,7 @@
 				8A603D8A2149460E00F848A4 /* PhotosUtils.swift in Sources */,
 				8A171F0B2148FE4100121E80 /* RealtimeDepthViewController.swift in Sources */,
 				8AAF371321480D32006A551B /* RootViewCell.swift in Sources */,
+				1596C64D22449F0E00D4A10B /* MetalVideoRecorder.swift in Sources */,
 				8A603D8C2149590F00F848A4 /* UIAlertController+Utils.swift in Sources */,
 				8AAF371D2148136A006A551B /* CGImageSource+Depth.swift in Sources */,
 				8A171F15214928BB00121E80 /* AVDepthData+Utils.swift in Sources */,

@@ -93,8 +93,7 @@
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
                                                 <connections>
-                                                    <action selector="startRecordingWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hAE-MM-o43"/>
-                                                    <action selector="stopRecordingWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1MR-3C-Z0k"/>
+                                                    <action selector="recordButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="SIU-7w-c3p"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -147,6 +146,7 @@
                         <outlet property="filterSwitch" destination="Syt-6J-8s0" id="brg-gs-zsQ"/>
                         <outlet property="mtkView" destination="elr-Ki-23o" id="Hnb-Kz-t16"/>
                         <outlet property="previewView" destination="RBj-ea-WE3" id="c1k-ck-2Au"/>
+                        <outlet property="recordButton" destination="sgL-tl-LqS" id="Z3I-Zm-RSW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
