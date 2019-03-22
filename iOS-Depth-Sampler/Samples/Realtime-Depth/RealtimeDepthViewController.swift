@@ -60,11 +60,11 @@ class RealtimeDepthViewController: UIViewController {
             var useDisparity: Bool = false
             var applyHistoEq: Bool = false
             DispatchQueue.main.sync(execute: {
-                //useDisparity = self.disparitySwitch.isOn
-                //applyHistoEq = self.equalizeSwitch.isOn
+                useDisparity = self.disparitySwitch.isOn
+                applyHistoEq = self.equalizeSwitch.isOn
                 
-                useDisparity = false
-                applyHistoEq = true
+                //useDisparity = false
+                //applyHistoEq = true
             })
             
             self.serialQueue.async {
@@ -109,6 +109,36 @@ class RealtimeDepthViewController: UIViewController {
                     //let filenamen = formatteddate.appending("_n.jpg")
                     let filepathd = directoryPathDepth.appending(filename)
                     let filepathn = directoryPathRGB.appending(filename)
+                    
+                    
+                    let row = str.appending(" rgb/") + filename + " " + str.appending(" depth/") + filename + "\n"
+                    
+                    
+                    
+                    let path =  NSHomeDirectory().appending("/Documents/")
+                    let directoryPathText =  NSHomeDirectory().appending("/Documents/associations.txt")
+                    let writePath = NSURL(fileURLWithPath: path)
+                    try? FileManager.default.createDirectory(atPath: writePath.path!, withIntermediateDirectories: true)
+                    let file = writePath.appendingPathComponent("associations.txt")
+                    
+                    if !FileManager.default.fileExists(atPath: directoryPathText) {
+                        do {
+                            try "".write(to: file!, atomically: false, encoding: String.Encoding.utf8)
+                        } catch {
+                            print(error)
+                        }
+                    }
+                    
+                    if FileManager.default.fileExists(atPath: path) {
+                        do {
+                            let fileHandle = try FileHandle(forWritingTo: file!)
+                            fileHandle.seekToEndOfFile()
+                            fileHandle.write(row.data(using: .utf8)!)
+                            //try? row.write(to: file!, atomically: false, encoding: String.Encoding.utf8)
+                        } catch {
+                            print("Error writing to file \(error)")
+                        }
+                    }
                     
                     let urld = NSURL.fileURL(withPath: filepathd)
                     let urln = NSURL.fileURL(withPath: filepathn)
