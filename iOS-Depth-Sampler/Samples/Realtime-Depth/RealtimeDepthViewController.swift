@@ -23,11 +23,11 @@ class RealtimeDepthViewController: UIViewController {
     private var videoCapture: VideoCapture!
     private var metalVideoRecorder: MetalVideoRecorder!
     var currentCameraType: CameraType = .back(true)
+
     private let serialQueue = DispatchQueue(label: "com.shu223.iOS-Depth-Sampler.queue")
     
     //let recorder = RPScreenRecorder.shared()
     private var isRecording = false
-    private var captured = false
 
     private var renderer: MetalRenderer!
     private var depthImage: CIImage?
@@ -44,12 +44,13 @@ class RealtimeDepthViewController: UIViewController {
         mtkView.delegate = self
         renderer = MetalRenderer(metalDevice: device, renderDestination: mtkView)
         currentDrawableSize = mtkView.currentDrawable!.layer.drawableSize
-
+        
         videoCapture = VideoCapture(cameraType: currentCameraType,
                                     preferredSpec: nil,
                                     previewContainer: previewView.layer)
         
-        //metalVideoRecorder = MetalVideoRecorder(outputURL: <#T##URL#>, size: currentDrawableSize, previewContainer: mtkView.layer)
+    
+    
         
         videoCapture.syncedDataBufferHandler = { [weak self] videoPixelBuffer, depthData, face in
             guard let self = self else { return }
@@ -71,14 +72,59 @@ class RealtimeDepthViewController: UIViewController {
                 
                 guard let ciImage = depthData.depthDataMap.transformedImage(targetSize: self.currentDrawableSize, rotationAngle: 0) else { return }
                 self.depthImage = applyHistoEq ? ciImage.applyingFilter("YUCIHistogramEqualization") : ciImage
-                
-                if (!self.captured) {
-                    //let image = CIImage(image: self.depthImage!)
+                if(self.isRecording){
                     let context = CIContext()
-                    let image = context.createCGImage(self.depthImage!, from: self.depthImage!.extent)
-                    let output = UIImage(cgImage: image!)
-                    self.captured = true
-                    UIImageWriteToSavedPhotosAlbum(output, nil, nil, nil);
+                    let imaged = context.createCGImage(self.depthImage!, from: self.depthImage!.extent)
+                    
+                    let imagen = context.createCGImage(self.videoImage!, from: self.videoImage!.extent)
+                    let outputd = UIImage(cgImage: imaged!)
+                    let outputn = UIImage(cgImage: imagen!)
+                    
+                    let directoryPathDepth =  NSHomeDirectory().appending("/Documents/depth/")
+                    if !FileManager.default.fileExists(atPath: directoryPathDepth) {
+                        do {
+                            try FileManager.default.createDirectory(at: NSURL.fileURL(withPath: directoryPathDepth), withIntermediateDirectories: true, attributes: nil)
+                        } catch {
+                            print(error)
+                        }
+                    }
+                    
+                    let directoryPathRGB =  NSHomeDirectory().appending("/Documents/rgb/")
+                    if !FileManager.default.fileExists(atPath: directoryPathRGB) {
+                        do {
+                            try FileManager.default.createDirectory(at: NSURL.fileURL(withPath: directoryPathRGB), withIntermediateDirectories: true, attributes: nil)
+                        } catch {
+                            print(error)
+                        }
+                    }
+                    
+                    let time = NSDate()
+                    let timestamp = time.timeIntervalSince1970
+                    let str = NSString(format: "%.6f", timestamp)
+//                    let formatter = DateFormatter()
+//                    formatter.dateFormat = "MMM d yyyy, h:mm:ss:SSSSS"
+//                    let formatteddate = formatter.string(from: time as Date)
+                    
+                    let filename = str.appending(".jpg")
+                    //let filenamen = formatteddate.appending("_n.jpg")
+                    let filepathd = directoryPathDepth.appending(filename)
+                    let filepathn = directoryPathRGB.appending(filename)
+                    
+                    let urld = NSURL.fileURL(withPath: filepathd)
+                    let urln = NSURL.fileURL(withPath: filepathn)
+                    do {
+                        try outputd.jpegData(compressionQuality: 1.0)?.write(to: urld, options: .atomic)
+                        try outputn.jpegData(compressionQuality: 1.0)?.write(to: urln, options: .atomic)
+                        debugPrint( String.init(filepathd))
+                        debugPrint( String.init(filepathn))
+                        
+                    } catch {
+                        print(error)
+                        //print("file cant not be save at path \(filepathd), with error : \(error)");
+                        debugPrint(filepathd)
+                        debugPrint(filepathn)
+                    }
+                    
                 }
                 
             }
@@ -125,28 +171,13 @@ class RealtimeDepthViewController: UIViewController {
     
     
     @IBAction func recordButtonTapped(_ sender: UIButton) {
-        if !isRecording {
-            //self.recordButton.backgroundColor = UIColor.red
-            sender.backgroundColor = .red
-            //videoCapture.startVideoRecording()
-            debugPrint("recording")
-            //metalVideoRecorder.startRecording()
-            isRecording = true
-            //debugPrint("recording")
-            //var currentDrawable: CAMetalDrawable?
-            
-            //let texture = currentDrawable?.texture
-            //let commandBuffer = MTLCommandQueue.makeCommandBuffer(<#T##MTLCommandQueue#>)
-            //commandBuffer().addCompletedHandler { commandBuffer in
-            //    self.recorder.writeFrame(forTexture: texture)
-            //}
-            
-        } else {
-            //self.recordButton.backgroundColor = UIColor.white
+        if(isRecording){
             sender.backgroundColor = .white
-            //videoCapture.stopVideoRecording()
-            //metalVideoRecorder.endRecording(<#T##completionHandler: () -> ()##() -> ()#>)
-            debugPrint("recording ended")
+            isRecording = false
+        }
+        else{
+            sender.backgroundColor = .red
+            isRecording = true
             
         }
     }
@@ -164,3 +195,4 @@ extension RealtimeDepthViewController: MTKViewDelegate {
         }
     }
 }
+
